@@ -1,0 +1,62 @@
+name: Feature request
+description: Propose a new feature or change for iCoParent
+title: "[Feature] "
+labels: ["type:feature", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check `docs/DEVELOPMENT_PLAN.md` §10 first — the feature may already be planned for a later version.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / user story
+      description: "As a <parent/child/...>, I want <...> so that <...>."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should happen? Screens, flows, rules.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checkable bullets. These become the agent's definition of done.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: dropdown
+    id: roles
+    attributes:
+      label: Who is affected?
+      multiple: true
+      options: [Parent (author), Other parent, Child, Extended family (V5+), Everyone]
+  - type: dropdown
+    id: version
+    attributes:
+      label: Suggested version
+      options: [V1 MVP, V2 Polish, V3 Native, V4 High-conflict, V5 Extended circle, V6 Money+, V7 AI assist, V8 Agentic, V9 Public launch, V10 Ecosystem, Not sure]
+  - type: dropdown
+    id: size
+    attributes:
+      label: Estimated size
+      options: [S (≤ ½ day), M (1–2 days), L (3–5 days), XL (must be split), Not sure]
+  - type: textarea
+    id: data
+    attributes:
+      label: Data / privacy / free-tier impact
+      description: New tables? Who can see what (RLS)? Files or storage growth? Push notifications?
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Principles check (plan §1)
+      options:
+        - label: Does not let a parent edit or delete the other parent's input
+        - label: Children only see child-appropriate data
+        - label: Fits the free tier (or is planned for V9+)
