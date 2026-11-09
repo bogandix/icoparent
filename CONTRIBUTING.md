@@ -20,6 +20,9 @@ Changing a locked decision needs an architecture decision record in `docs/adr/`.
 - For database changes, follow this order: migration, RLS policies, pgTAP tests, generated types.
 - Row-level security tests must cover parent A, parent B, child and outsider.
 - Never edit a merged migration. Add a new one.
+- Add every new UI string in both English and Romanian. If you don't speak Romanian, a draft is fine;
+  say so in the pull request so a native speaker can review it.
+- Run the app and end-to-end tests locally in Docker. You don't need a Google or cloud account.
 - Complete the checklist in the pull request template honestly.
 
 AI-assisted contributions are welcome. [`CLAUDE.md`](CLAUDE.md) holds the rules for coding agents.

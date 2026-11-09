@@ -50,7 +50,7 @@ These were agreed during planning. Changing one requires updating this section i
 | ID | Decision |
 |----|----------|
 | D1 | **Stack:** React + Vite + TypeScript PWA → Cloudflare Pages. Supabase (Postgres, Auth, Storage). One Cloudflare Worker for push + cron. |
-| D2 | **Auth:** Google sign-in via Supabase Auth (PWA redirect flow). Auth code isolated in one module so V3 (Capacitor) can swap in native Google Sign-In. |
+| D2 | **Auth:** Google sign-in via Supabase Auth (PWA redirect flow). Auth code isolated in one module so V3 (Capacitor) can swap in native Google Sign-In. Local Docker environments additionally allow email/password sign-in with seeded fictional users (D18); this never ships to production. |
 | D3 | **Multi-tenant from day one:** every domain row has `family_id`; every RLS policy checks family membership. |
 | D4 | **MVP users:** parents (full) + children (optional login, restricted). Kid *profiles* exist without logins. Grandparents/partners/nannies → V5. |
 | D5 | **Files:** Supabase Storage (1 GB free) behind a `storage` adapter interface. Images → WebP, max 1600 px long edge, target ≤ 250 KB. Voice → max 2 min. Migrate adapter to Cloudflare R2 in V9 (or earlier if > 700 MB used). |
@@ -62,10 +62,11 @@ These were agreed during planning. Changing one requires updating this section i
 | D11 | **Check-ins:** one tap with timestamp; receiving parent can confirm. GPS optional, off by default. Lateness is computed, never typed. |
 | D12 | **Feed audience:** `family` (everyone incl. kids) or `parents`. Reactions only (no comments) in MVP. |
 | D13 | **Notifications:** in-app inbox for everything; Web Push for proposals, handover check-ins, new expenses. iOS push requires "Add to Home Screen" (documented in onboarding). |
-| D14 | **Language:** UI strings in i18n files from day one (English first; Romanian in V2). Timezone stored per family; all timestamps `timestamptz`. |
+| D14 | **Language:** English and Romanian are both first-class from V0. Every UI string ships in `en` and `ro` in the same PR. The language comes from `profiles.locale`; before sign-in it comes from the browser, falling back to `en`. Timezone stored per family; all timestamps `timestamptz`. |
 | D15 | **Backups:** nightly `pg_dump` via GitHub Actions (Supabase free tier has no backups), encrypted and uploaded to a private Cloudflare R2 bucket. Never stored as an Actions artifact, because artifacts on a public repo can be downloaded by any signed-in GitHub user. Part of V0, not optional. |
 | D16 | **Open source:** the repo is public and anyone can self-host it with their own Supabase and Cloudflare accounts (`docs/SETUP.md`). The repo never contains real family data, secrets, or production-only values: config comes from environment variables, and `seed.sql` is fictional. |
 | D17 | **Licence:** AGPL-3.0 (`LICENSE`). Contributions are accepted under the same licence. Revisit the licensing model before V9 billing (F-904). |
+| D18 | **Local environment:** the whole app runs in Docker with one command and needs no cloud accounts: Supabase through its CLI, plus web, Worker and Playwright through Compose. Full E2E flows run against it using seeded local users for parent A, parent B, child and outsider. |
 
 ---
 
@@ -126,6 +127,19 @@ These were agreed during planning. Changing one requires updating this section i
 | Tests | Vitest + Testing Library; Playwright (E2E); pgTAP via `supabase test db` (RLS) | |
 | Types | `supabase gen types typescript` → `src/lib/database.types.ts` | DB is source of truth |
 
+### Local development (Docker, D18)
+
+| Piece | Runs through | Local behaviour |
+|-------|--------------|-----------------|
+| Postgres, Auth, Storage, Realtime, Studio, Mailpit | `supabase start` (CLI pinned as a dev dependency; Docker containers) | Same migrations and pgTAP tests as CI; seeded with a fictional family |
+| Web app | Compose service `web` | Vite with hot reload; `VITE_AUTH_MODE=local` shows the local sign-in screen |
+| Worker | Compose service `worker` | `wrangler dev`; `PUSH_MODE=log` records push messages instead of sending them; cron can be triggered on demand |
+| Playwright | Compose service `e2e` (profile, runs on demand) | Pinned Playwright image; one signed-in session per seeded actor |
+
+Compose services join the Supabase CLI's Docker network (`supabase_network_icoparent`), so the database webhook can reach the Worker. Supabase is deliberately not duplicated in Compose: one definition keeps local, CI and migrations identical.
+
+Host requirements: Docker, Node and pnpm. Google OAuth stays optional locally and is only needed when working on F-003 itself.
+
 ---
 
 ## 4. Repository layout
@@ -137,6 +151,9 @@ icoparent/
 ├── CONTRIBUTING.md
 ├── SECURITY.md
 ├── LICENSE
+├── docker-compose.yml            # web, worker, e2e (Supabase runs through its CLI)
+├── .env.example                  # Local defaults only; never real keys
+├── docker/                       # Dockerfiles for local services
 ├── docs/
 │   ├── DEVELOPMENT_PLAN.md       # This file
 │   ├── SETUP.md                  # Accounts, keys, OAuth, deploy (written in F-001..F-006)
@@ -150,7 +167,7 @@ icoparent/
 │       │   │   └── <feature>/    #   api.ts (queries/mutations), components/, hooks/, types.ts
 │       │   ├── components/ui/    # shadcn components
 │       │   ├── lib/              # supabase client, auth, storage adapter, dates, i18n
-│       │   └── locales/en/*.json
+│       │   └── locales/{en,ro}/*.json
 │       ├── public/
 │       └── tests/e2e/
 ├── workers/
@@ -180,7 +197,7 @@ All tables live in `public`, have `id uuid primary key default gen_random_uuid()
 
 | Table | Key columns | Notes |
 |-------|-------------|-------|
-| `profiles` | `id` (= `auth.users.id`), `display_name`, `avatar_url`, `locale`, `timezone` | Created by trigger on sign-up |
+| `profiles` | `id` (= `auth.users.id`), `display_name`, `avatar_url`, `locale` (`en`/`ro`), `timezone` | Created by trigger on sign-up |
 | `families` | `name`, `timezone`, `default_currency`, `created_by` | |
 | `family_members` | `family_id`, `user_id` (nullable), `role` (`parent`/`child`), `display_name`, `color`, `birthdate` (children), `status` (`invited`/`active`/`left`) | A child without login has `user_id = null`. Max 2 active parents in MVP. |
 | `invites` | `family_id`, `email`, `role`, `token_hash`, `expires_at`, `accepted_at`, `created_by` | Accept via RPC `accept_invite(token)` |
@@ -198,7 +215,7 @@ All tables live in `public`, have `id uuid primary key default gen_random_uuid()
 | `posts` | `family_id`, `author_member_id`, `body`, `audience` (`family`/`parents`), `happened_on`, `event_id` (nullable), `status` | Journal / feed |
 | `reactions` | `family_id`, `post_id`, `member_id`, `emoji` | Unique (post, member, emoji) |
 | `attachments` | `family_id`, `owner_type` (`expense`/`post`/`event`/`proposal`/`checkin`), `owner_id`, `kind` (`image`/`audio`), `storage_path`, `thumb_path`, `mime`, `bytes`, `width`, `height`, `duration_ms`, `created_by` | Files at `family/{family_id}/{owner_type}/{owner_id}/{uuid}.webp` |
-| `notifications` | `family_id`, `recipient_user_id`, `type`, `title`, `body`, `link`, `payload jsonb`, `read_at`, `pushed_at` | Inserted by triggers only |
+| `notifications` | `family_id`, `recipient_user_id`, `type`, `link`, `payload jsonb`, `read_at`, `pushed_at` | Inserted by triggers only. Stores a type and parameters, never finished text; the text is rendered in the recipient's language |
 | `push_subscriptions` | `user_id`, `endpoint`, `p256dh`, `auth`, `user_agent`, `last_used_at` | |
 | `notification_prefs` | `user_id`, `type`, `push` bool, `inbox` bool | |
 | `audit_log` | `family_id`, `table_name`, `row_id`, `action`, `actor_user_id`, `at`, `old jsonb`, `new jsonb` | Written by generic trigger on all domain tables. Insert-only, never exposed for update/delete. |
@@ -273,7 +290,7 @@ Only the **other** parent can respond. The author can only withdraw. Every trans
 5. **Time:** store `timestamptz`; display in the family timezone; all-day events stored as dates in family TZ.
 6. **Files:** always go through `lib/storage.ts` (`upload(file, owner) → attachment`). It compresses, creates a 400 px thumbnail, uploads both, inserts `attachments`. Max 10 images per item.
 7. **Notifications:** created by DB triggers, never by the frontend.
-8. **Strings:** no hard-coded UI text; use `t('feature.key')`.
+8. **Strings:** no hard-coded UI text; use `t('feature.key')`, with every key present in both `en` and `ro`. Store codes, not labels (categories, statuses). SQL functions raise stable error codes that the UI translates. Anything generated outside the UI (push, digests, iCal, exports, reports) uses the recipient's `profiles.locale`.
 9. **Accessibility:** keyboard reachable, labelled controls, colour is never the only signal (custody colours also have initials/patterns).
 10. **Mobile first:** design at 375 px width first; the app must be usable with one thumb.
 
@@ -297,7 +314,7 @@ Only the **other** parent can respond. The author can only withdraw. Every trans
 - [ ] Generated types updated
 - [ ] Unit tests for non-trivial logic; Playwright happy path for user-facing flows
 - [ ] Works at 375 px and on desktop; checked in child mode
-- [ ] Strings in i18n files
+- [ ] Strings in i18n files, in both `en` and `ro`
 - [ ] No console errors; `pnpm lint && pnpm typecheck && pnpm test` green
 - [ ] Docs updated (this plan, SETUP.md, or an ADR if a decision changed)
 - [ ] Storage/egress impact noted if files involved
@@ -350,9 +367,9 @@ Estimates assume one developer, part-time (~15 h/week), with AI assistance. Trea
 
 | Version | Theme | Goal / exit criterion | Est. duration |
 |---------|-------|----------------------|---------------|
-| **V0** | Foundation | Empty app deployed; Google login works; CI + backups running | 1–2 weeks |
+| **V0** | Foundation | Empty app deployed in EN + RO; Google login works; full stack and E2E run locally in Docker; CI + backups running | 2–3 weeks |
 | **V1** | **MVP** | Two parents use it daily for a month instead of WhatsApp | 8–10 weeks |
-| V2 | Polish & everyday comfort | Romanian UI, offline read, iCal feed, search, exports | 4–5 weeks |
+| V2 | Polish & everyday comfort | Offline read, iCal feed, search, exports | 4–5 weeks |
 | V3 | Native apps | iOS + Android builds (Capacitor) with native push and login | 3–4 weeks |
 | V4 | High-conflict mode | Court-ready records, structured messaging, stricter workflows | 4–5 weeks |
 | V5 | Extended circle | Grandparents, new partners, nannies, teens with richer roles | 3–4 weeks |
@@ -455,7 +472,52 @@ Mobile-first layout: bottom tab bar (Calendar, Agreements, Money, Feed, More), t
 **Acceptance criteria**
 - [ ] Navigation works at 375 px and desktop (side nav ≥ 1024 px)
 - [ ] Theme tokens defined once (colours for parent A, parent B, child)
-- [ ] Every text comes from `locales/en/*.json`
+- [ ] Every text comes from the locale files
+
+### F-008 · English + Romanian localization
+**Size:** M · **Area:** i18n · **Depends on:** F-007
+
+Full `en` and `ro` catalogues, language picker saved to `profiles.locale`, browser detection before sign-in with `en` as fallback. Dates via date-fns locales; numbers and money via `Intl` (for example `1.234,50 lei` in `ro`). Romanian plurals use i18next's `one`/`few`/`other` forms. Text uses correct comma-below `ș` and `ț`. Agents may draft Romanian, but a native speaker reviews it before release.
+
+**Acceptance criteria**
+- [ ] Switching language updates the UI without a reload and persists across devices
+- [ ] CI fails if a key exists in one language but not the other
+- [ ] Unit tests cover Romanian plurals for 1, 2 and 20 items, plus date and money formatting
+- [ ] Layout holds at 375 px in Romanian
+
+### F-009 · Dockerised local stack
+**Size:** M · **Area:** infra · **Depends on:** F-001, F-002, F-006
+
+`docker-compose.yml` with `web` and `worker` services on the Supabase Docker network, as described in §3. `pnpm docker:up` starts Supabase, applies migrations and seed data, then starts the services; `pnpm docker:down` stops them. Local defaults live in `.env.example`. The Worker runs with `PUSH_MODE=log`.
+
+**Acceptance criteria**
+- [ ] On a clean machine with only Docker, Node and pnpm, `pnpm docker:up` gives a working app at `localhost:5173` with no cloud accounts
+- [ ] Editing a source file hot-reloads the app, including on macOS
+- [ ] A local database webhook reaches the Worker, and the scheduled job can be triggered on demand
+- [ ] Image versions are pinned; SETUP.md documents the local workflow
+
+### F-010 · Local sign-in & seeded actors
+**Size:** M · **Area:** auth · **Depends on:** F-003, F-009
+
+`lib/auth.ts` gains an email/password path used only when `VITE_AUTH_MODE=local`. `seed.sql` creates fictional users for parent A, parent B, child and outsider, with the first three in a demo family. The local sign-in screen offers one-tap login for each. Hosted Supabase keeps the email provider disabled, and SETUP.md says so.
+
+**Acceptance criteria**
+- [ ] All four actors can sign in locally without Google, and each gets the same RLS treatment as a Google user
+- [ ] Sign-out and switching between actors work
+- [ ] The production build fails if `VITE_AUTH_MODE=local`
+- [ ] CI confirms the production bundle contains no local sign-in code or seeded credentials
+- [ ] Seed data is never applied to the hosted database (`supabase db push` runs without `--include-seed`)
+
+### F-011 · Docker E2E harness
+**Size:** M · **Area:** quality · **Depends on:** F-005, F-010
+
+`pnpm e2e` runs Playwright in the pinned Compose `e2e` service against a freshly reset local stack. Fixtures provide one signed-in browser context per actor, so two-parent flows run in one test. Time-based flows backdate rows with the service role, then trigger the scheduled job, rather than faking the database clock. Push is asserted against the Worker's `PUSH_MODE=log` output. The browser container uses its own app and Supabase URLs, with those origins treated as secure so service workers and microphone APIs work.
+
+**Acceptance criteria**
+- [ ] A sample test signs in as parent A and parent B in separate contexts and sees shared data live
+- [ ] A sample test confirms that a child is blocked from a parents-only screen
+- [ ] The E2E suite runs in CI with no repository secrets and uploads traces only from fictional data
+- [ ] The same command works locally and in CI
 
 ---
 
@@ -464,7 +526,7 @@ Mobile-first layout: bottom tab bar (Calendar, Agreements, Money, Feed, More), t
 ### M1 · Family
 
 ### F-101 · Create family & onboarding
-**Size:** M · **Area:** family · **Depends on:** F-007
+**Size:** M · **Area:** family · **Depends on:** F-007, F-008, F-011
 
 First-run flow: create family (name, timezone, default currency RON), become parent #1. Tables: `families`, `family_members`; helpers `is_family_member`, `is_family_parent`, `current_member_id`; RPC `create_family`. Generic `audit_log` trigger introduced here and attached to every domain table from now on.
 
@@ -694,6 +756,7 @@ Inbox UI over the `notifications` table from F-121, which proposals and check-in
 **Acceptance criteria**
 - [ ] Unread count updates live without refresh
 - [ ] Notifications only visible to their recipient
+- [ ] Each notification renders in the viewer's language from its `type` and `payload`
 
 ### F-182 · Web Push
 **Size:** L · **Area:** notifications · **Depends on:** F-181, F-006
@@ -704,6 +767,7 @@ PWA service worker push handler; subscribe flow + per-type prefs (`notification_
 - [ ] Push received on Android Chrome and iOS (installed PWA, iOS ≥ 16.4)
 - [ ] Clicking a push opens the right screen
 - [ ] Only default types (D13) push by default
+- [ ] Push text uses the recipient's `profiles.locale`, from catalogues shared with the web app
 
 ### F-183 · PWA install & offline shell
 **Size:** S · **Area:** ui · **Depends on:** F-007
@@ -729,20 +793,14 @@ Two-week real use. Fix list, performance pass (bundle < 300 KB gz initial), Play
 
 **Acceptance criteria**
 - [ ] Zero P1 bugs open
+- [ ] Full Playwright suite passes in Docker with local sign-in, with a smoke run in both `en` and `ro`
+- [ ] Native-speaker review of the Romanian UI is complete
 - [ ] Backups verified; restore drill done
 - [ ] Both parents prefer the app over chat for logistics
 
 ---
 
 ## V2 — Polish & everyday comfort
-
-### F-201 · Romanian translation
-**Size:** S · **Area:** i18n · **Depends on:** F-199
-
-Full `ro` locale; language picker; dates/currency formatted per locale.
-
-**Acceptance criteria**
-- [ ] No untranslated keys (CI check)
 
 ### F-202 · iCal subscription feed
 **Size:** M · **Area:** calendar · **Depends on:** F-199
@@ -1191,6 +1249,8 @@ New ideas use the **Feature request** issue template; triage assigns a version a
 | Agent-generated RLS mistakes | **High** | pgTAP matrix tests required for every table; human reviews all SQL |
 | Scope creep into V1 | High | Anything not listed in V1 goes to an issue with a later milestone |
 | Secrets or real family data reach the public repo or logs | **High** | D16, `.gitignore`, env-only config, GitHub secret scanning, fictional seed data; backups never in Actions artifacts (D15) |
+| Local sign-in or seeded users reach production | **High** | Build fails on `VITE_AUTH_MODE=local`, CI scans the bundle, hosted email provider disabled, seed never pushed (F-010) |
+| Romanian falls behind or reads poorly | Medium | CI key-parity check (F-008), both languages required in every PR, native-speaker review before release |
 | Public schema makes RLS mistakes easier to find | High | pgTAP matrix tests, private vulnerability reporting, F-906 security review before launch |
 
 **Open questions (answer before the related feature starts):**

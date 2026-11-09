@@ -10,7 +10,7 @@ Closes #<issue> — F-<id> <title>
 - [ ] Generated types updated (`pnpm db:types`)
 - [ ] Unit tests for non-trivial logic; Playwright happy path for user-facing flows
 - [ ] Works at 375 px and desktop; checked in child mode
-- [ ] Strings in i18n files
+- [ ] Strings in i18n files, in both `en` and `ro`
 - [ ] `pnpm lint && pnpm typecheck && pnpm test` green
 - [ ] Docs updated (plan / SETUP.md / ADR)
 - [ ] Storage/egress impact noted (if files involved)

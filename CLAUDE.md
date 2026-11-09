@@ -20,8 +20,10 @@ Google, Storage); one Cloudflare Worker (workers/icoparent-worker) for push + cr
 7. **Children never see** expenses, proposals, acknowledgments, audit log, or `parents`-audience items.
 8. **Notifications are created by DB triggers**, never by the frontend.
 9. **Files only through `apps/web/src/lib/storage.ts`** (compression + thumbnails + attachments row).
-10. **Auth only through `apps/web/src/lib/auth.ts`.**
-11. **No hard-coded UI strings** — use i18next keys in `apps/web/src/locales/en/*.json`.
+10. **Auth only through `apps/web/src/lib/auth.ts`.** Local email/password sign-in exists only for `VITE_AUTH_MODE=local`
+    and must never reach a production build.
+11. **No hard-coded UI strings** — use i18next keys, and add every key to both `apps/web/src/locales/en/*.json` and
+    `apps/web/src/locales/ro/*.json`. Store codes rather than labels; notifications store `type` + `payload`, never text.
 12. **Never edit a merged migration.** Create a new one.
 13. **Do not change locked decisions** (plan §2). If one blocks you, stop and explain; propose an ADR.
 14. **No new dependency** without justifying it in the PR description.
@@ -31,12 +33,14 @@ Google, Storage); one Cloudflare Worker (workers/icoparent-worker) for push + cr
 
 ## Commands
 ```
+pnpm docker:up      # full local stack in Docker (Supabase, web, Worker) with seeded local users
+pnpm docker:down    # stop it
 pnpm dev            # web app
 pnpm lint && pnpm typecheck && pnpm test
 pnpm db:reset       # supabase db reset (local)
 pnpm db:test        # pgTAP
 pnpm db:types       # regenerate apps/web/src/lib/database.types.ts
-pnpm e2e            # Playwright
+pnpm e2e            # Playwright in Docker, signed in as the seeded parent A, parent B, child and outsider
 ```
 
 ## Code layout
@@ -46,4 +50,4 @@ pnpm e2e            # Playwright
 
 ## Definition of Done
 See `docs/DEVELOPMENT_PLAN.md` §7. Copy the checklist into the PR description and tick it honestly.
-Check every screen at 375 px width and in child mode.
+Check every screen at 375 px width, in child mode, and in both English and Romanian.
