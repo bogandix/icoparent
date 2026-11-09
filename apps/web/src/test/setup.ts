@@ -1,0 +1,10 @@
+import { cleanup } from "@testing-library/react"
+import "@testing-library/jest-dom/vitest"
+import { afterEach } from "vitest"
+import { initI18n } from "@/lib/i18n"
+
+await initI18n(["en"])
+
+afterEach(() => {
+  cleanup()
+})

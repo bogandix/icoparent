@@ -1,0 +1,239 @@
+{
+  "home": {
+    "kicker": "Co-parenting",
+    "title": "iCoParent",
+    "subtitle": "A calm, private space for two parents and their children."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page is not part of iCoParent.",
+    "home": "Back home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "body": "Try again from the home page."
+  },
+  "itemCount_one": "{{count}} item",
+  "itemCount_few": "{{count}} items",
+  "itemCount_other": "{{count}} items",
+  "auth": {
+    "google": "Continue with Google",
+    "localTitle": "Local demo family",
+    "parentA": "Parent A",
+    "parentB": "Parent B",
+    "child": "Child",
+    "outsider": "Outsider",
+    "signOut": "Sign out",
+    "missingConfig": "This build has no Supabase address yet. Add it to the environment before signing in.",
+    "language": "Language"
+  },
+  "shell": {
+    "today": "Today",
+    "calendar": "Calendar",
+    "agreements": "Agreements",
+    "money": "Money",
+    "feed": "Feed",
+    "more": "More",
+    "inbox": "Inbox",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "loading": "Loading",
+    "empty": "Nothing here yet.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "parentsOnly": "Parents only"
+  },
+  "onboarding": {
+    "title": "Create your family",
+    "name": "Family name",
+    "timezone": "Timezone",
+    "currency": "Currency",
+    "create": "Create family"
+  },
+  "family": {
+    "settings": "Family settings",
+    "children": "Children",
+    "addChild": "Add child",
+    "childName": "Name",
+    "birthdate": "Birthdate",
+    "invite": "Invite",
+    "inviteParent": "Invite the other parent",
+    "inviteChild": "Invite a child",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "leave": "Leave family",
+    "childrenCanPost": "Children can post to the family feed",
+    "members": "People",
+    "color": "Colour",
+    "noLogin": "No login"
+  },
+  "calendar": {
+    "agenda": "Agenda",
+    "today": "Today",
+    "day": "Day",
+    "month": "Month",
+    "week": "Week",
+    "empty": "Nothing scheduled in this range.",
+    "tapEvent": "Tap an event to acknowledge it or void it.",
+    "quickTitle": "Quick actions",
+    "quickHint": "Right-click a day, or hold it on a phone, for quick actions.",
+    "quickCover": "Ask the other parent to cover",
+    "addEvent": "Add event",
+    "addBlocker": "Mark unavailable",
+    "blockerHelp": "The other parent can see this time. Children cannot. It does not change who has the children. To ask the other parent to cover them, create a “Can you cover?” agreement.",
+    "custody": "Custody pattern",
+    "kidsWith": "Kids with {{name}}",
+    "acknowledge": "Acknowledge",
+    "void": "Void",
+    "reason": "Reason",
+    "propose": "Propose change",
+    "title": "Title",
+    "starts": "Starts",
+    "ends": "Ends",
+    "location": "Location",
+    "allDay": "All day",
+    "filterChild": "Child",
+    "everyone": "Everyone",
+    "handover": "Handover"
+  },
+  "custody": {
+    "week_on_week_off": "Week on, week off",
+    "2_2_3": "2-2-3",
+    "2_2_5_5": "2-2-5-5",
+    "alternate_weekends": "Alternate weekends and a midweek night",
+    "starts": "Pattern starts",
+    "handoverTime": "Handover time",
+    "handoverPlace": "Handover place",
+    "save": "Save pattern",
+    "proposed": "The other parent needs to agree before this pattern changes."
+  },
+  "agreements": {
+    "waitingForMe": "Waiting for me",
+    "waitingForThem": "Waiting for them",
+    "history": "History",
+    "new": "New agreement",
+    "accept": "Accept",
+    "decline": "Decline",
+    "counter": "Counter",
+    "withdraw": "Withdraw",
+    "comment": "Note",
+    "kind": "Kind",
+    "blocker_request": "Can you cover?",
+    "custody_swap": "Swap days",
+    "decision": "Decision",
+    "event_change": "Event change",
+    "logExpense": "Log the expense",
+    "event": "Event",
+    "otherParent": "Other parent",
+    "coverHelp": "The other parent is asked to take the children for this time. Nothing changes until they accept."
+  },
+  "money": {
+    "add": "Add expense",
+    "amount": "Amount",
+    "category": "Category",
+    "spentOn": "Date",
+    "paidBy": "Paid by",
+    "merchant": "Merchant",
+    "note": "Note",
+    "monthTotal": "This month",
+    "receipt": "Receipt",
+    "history": "Earlier version",
+    "school": "School",
+    "clothes": "Clothes",
+    "health": "Health",
+    "activities": "Activities",
+    "toys": "Toys",
+    "trips": "Trips",
+    "food": "Food",
+    "other": "Other",
+    "original": "Original amount"
+  },
+  "feed": {
+    "new": "New memory",
+    "body": "What happened?",
+    "audienceFamily": "Whole family",
+    "audienceParents": "Parents only",
+    "happened": "Date",
+    "record": "Hold to record",
+    "stop": "Stop",
+    "onThisDay": "On this day",
+    "heart": "Heart",
+    "smile": "Smile",
+    "hug": "Hug"
+  },
+  "handover": {
+    "dropoff": "Dropped off",
+    "pickup": "Picked up",
+    "confirm": "Confirm",
+    "next": "Next handover",
+    "missed": "Missed",
+    "late": "{{minutes}} min late",
+    "onTime": "On time"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "empty": "You are up to date.",
+    "markRead": "Mark read",
+    "markAll": "Mark all read",
+    "open": "Open",
+    "types": {
+      "proposal": {
+        "pending": "Agreement waiting: {{title}}",
+        "accept": "Agreement accepted: {{title}}",
+        "decline": "Agreement declined: {{title}}",
+        "counter": "A counter-offer arrived: {{title}}",
+        "expired": "An agreement expired: {{title}}",
+        "reminder": "An agreement still needs an answer: {{title}}",
+        "withdrawn": "An agreement was withdrawn: {{title}}"
+      },
+      "handover": {
+        "checkin": "A handover was updated.",
+        "missed": "A handover was missed."
+      },
+      "expense": {
+        "created": "A new expense was logged."
+      },
+      "post": {
+        "created": "A new family note was posted."
+      },
+      "acknowledgment": {
+        "created": "Something you shared was acknowledged."
+      }
+    }
+  },
+  "storage": {
+    "used": "Storage used",
+    "warning": "This family is past 70% of the storage budget."
+  },
+  "pwa": {
+    "install": "Install the app",
+    "ios": "On iPhone, use Share, then Add to Home Screen, to receive alerts.",
+    "update": "Update available",
+    "reload": "Reload",
+    "offline": "You are offline. The last opened pages stay available."
+  },
+  "errors": {
+    "unknown": "That did not work. Try again.",
+    "not_authenticated": "Sign in first.",
+    "not_family_parent": "Only a parent can do that.",
+    "not_family_member": "You are not in this family.",
+    "author_cannot_acknowledge": "You cannot acknowledge your own item.",
+    "author_only": "Only the author can change this.",
+    "author_cannot_respond": "You cannot respond to your own agreement.",
+    "author_edits_directly": "You can edit your own event directly.",
+    "event_author_must_approve": "The person who created the event approves the change.",
+    "counter_of_counter": "A counter-proposal can only be accepted or declined.",
+    "max_parents": "This family already has two parents.",
+    "invite_expired": "This invite has expired.",
+    "invite_used": "This invite was already used.",
+    "invite_not_found": "This invite link is not valid.",
+    "reason_required": "Add a short reason.",
+    "unknown_subject": "That item cannot be changed this way.",
+    "proposal_not_pending": "This agreement is already closed.",
+    "proposal_expired": "This agreement has expired.",
+    "attachments_frozen": "Add files on a new version after the other parent has acknowledged it.",
+    "too_many_images": "You can attach up to 10 images.",
+    "audio_too_long": "A voice note can be at most 2 minutes.",
+    "local_auth_disabled": "Local sign-in is only for the Docker environment."
+  }
+}

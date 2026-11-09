@@ -1,0 +1,239 @@
+{
+  "home": {
+    "kicker": "Coparentalitate",
+    "title": "iCoParent",
+    "subtitle": "Un spațiu calm și privat pentru doi părinți și copiii lor."
+  },
+  "notFound": {
+    "title": "Pagina nu a fost găsită",
+    "body": "Această pagină nu face parte din iCoParent.",
+    "home": "Înapoi acasă"
+  },
+  "error": {
+    "title": "Ceva nu a mers bine",
+    "body": "Încearcă din nou de pe pagina principală."
+  },
+  "itemCount_one": "{{count}} element",
+  "itemCount_few": "{{count}} elemente",
+  "itemCount_other": "{{count}} de elemente",
+  "auth": {
+    "google": "Continuă cu Google",
+    "localTitle": "Familia demo locală",
+    "parentA": "Părintele A",
+    "parentB": "Părintele B",
+    "child": "Copil",
+    "outsider": "Persoană din afară",
+    "signOut": "Ieși din cont",
+    "missingConfig": "Acest build nu are încă o adresă Supabase. Adaug-o în mediu înainte de autentificare.",
+    "language": "Limbă"
+  },
+  "shell": {
+    "today": "Azi",
+    "calendar": "Calendar",
+    "agreements": "Înțelegeri",
+    "money": "Bani",
+    "feed": "Jurnal",
+    "more": "Mai mult",
+    "inbox": "Inbox",
+    "themeLight": "Luminoasă",
+    "themeDark": "Întunecată",
+    "loading": "Se încarcă",
+    "empty": "Nimic aici încă.",
+    "save": "Salvează",
+    "cancel": "Renunță",
+    "parentsOnly": "Doar părinții"
+  },
+  "onboarding": {
+    "title": "Creează familia",
+    "name": "Numele familiei",
+    "timezone": "Fus orar",
+    "currency": "Monedă",
+    "create": "Creează familia"
+  },
+  "family": {
+    "settings": "Setările familiei",
+    "children": "Copii",
+    "addChild": "Adaugă un copil",
+    "childName": "Nume",
+    "birthdate": "Data nașterii",
+    "invite": "Invitație",
+    "inviteParent": "Invită celălalt părinte",
+    "inviteChild": "Invită un copil",
+    "copy": "Copiază linkul",
+    "copied": "Link copiat",
+    "leave": "Părăsește familia",
+    "childrenCanPost": "Copiii pot posta în jurnalul familiei",
+    "members": "Oameni",
+    "color": "Culoare",
+    "noLogin": "Fără cont"
+  },
+  "calendar": {
+    "agenda": "Agendă",
+    "today": "Azi",
+    "day": "Zi",
+    "month": "Lună",
+    "week": "Săptămână",
+    "empty": "Nimic programat în acest interval.",
+    "tapEvent": "Atinge un eveniment ca să confirmi primirea sau să îl anulezi.",
+    "quickTitle": "Acțiuni rapide",
+    "quickHint": "Click dreapta pe o zi, sau ține apăsat pe telefon, pentru acțiuni rapide.",
+    "quickCover": "Cere celuilalt părinte să preia",
+    "addEvent": "Adaugă eveniment",
+    "addBlocker": "Marchează indisponibil",
+    "blockerHelp": "Celălalt părinte vede acest interval. Copiii nu îl văd. Nu schimbă la cine sunt copiii. Ca să ceri celuilalt părinte să îi preia, creează o înțelegere „Poți să preiei?”.",
+    "custody": "Programul de custodie",
+    "kidsWith": "Copiii sunt la {{name}}",
+    "acknowledge": "Confirmă primirea",
+    "void": "Anulează",
+    "reason": "Motiv",
+    "propose": "Propune o schimbare",
+    "title": "Titlu",
+    "starts": "Începe",
+    "ends": "Se termină",
+    "location": "Loc",
+    "allDay": "Toată ziua",
+    "filterChild": "Copil",
+    "everyone": "Toți",
+    "handover": "Predare"
+  },
+  "custody": {
+    "week_on_week_off": "O săptămână și o săptămână",
+    "2_2_3": "2-2-3",
+    "2_2_5_5": "2-2-5-5",
+    "alternate_weekends": "Weekenduri alternate și o noapte la mijlocul săptămânii",
+    "starts": "Programul începe",
+    "handoverTime": "Ora predării",
+    "handoverPlace": "Locul predării",
+    "save": "Salvează programul",
+    "proposed": "Celălalt părinte trebuie să fie de acord înainte ca programul să se schimbe."
+  },
+  "agreements": {
+    "waitingForMe": "Așteaptă răspunsul meu",
+    "waitingForThem": "Așteaptă răspunsul lor",
+    "history": "Istoric",
+    "new": "Înțelegere nouă",
+    "accept": "Acceptă",
+    "decline": "Refuză",
+    "counter": "Contraofertă",
+    "withdraw": "Retrage",
+    "comment": "Notă",
+    "kind": "Tip",
+    "blocker_request": "Poți să preiei?",
+    "custody_swap": "Schimb de zile",
+    "decision": "Decizie",
+    "event_change": "Schimbare de eveniment",
+    "logExpense": "Înregistrează cheltuiala",
+    "event": "Eveniment",
+    "otherParent": "Celălalt părinte",
+    "coverHelp": "Celălalt părinte este rugat să preia copiii în acest interval. Nu se schimbă nimic până acceptă."
+  },
+  "money": {
+    "add": "Adaugă cheltuială",
+    "amount": "Sumă",
+    "category": "Categorie",
+    "spentOn": "Data",
+    "paidBy": "Plătit de",
+    "merchant": "Comerciant",
+    "note": "Notă",
+    "monthTotal": "Luna aceasta",
+    "receipt": "Bon",
+    "history": "Versiune anterioară",
+    "school": "Școală",
+    "clothes": "Haine",
+    "health": "Sănătate",
+    "activities": "Activități",
+    "toys": "Jucării",
+    "trips": "Excursii",
+    "food": "Mâncare",
+    "other": "Altele",
+    "original": "Suma originală"
+  },
+  "feed": {
+    "new": "Amintire nouă",
+    "body": "Ce s-a întâmplat?",
+    "audienceFamily": "Toată familia",
+    "audienceParents": "Doar părinții",
+    "happened": "Data",
+    "record": "Ține apăsat ca să înregistrezi",
+    "stop": "Oprește",
+    "onThisDay": "În această zi",
+    "heart": "Inimă",
+    "smile": "Zâmbet",
+    "hug": "Îmbrățișare"
+  },
+  "handover": {
+    "dropoff": "Am lăsat copilul",
+    "pickup": "Am preluat copilul",
+    "confirm": "Confirmă",
+    "next": "Următoarea predare",
+    "missed": "Ratată",
+    "late": "{{minutes}} min întârziere",
+    "onTime": "La timp"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "empty": "Ești la zi.",
+    "markRead": "Marchează citit",
+    "markAll": "Marchează tot citit",
+    "open": "Deschide",
+    "types": {
+      "proposal": {
+        "pending": "Înțelegere în așteptare: {{title}}",
+        "accept": "Înțelegere acceptată: {{title}}",
+        "decline": "Înțelegere refuzată: {{title}}",
+        "counter": "A sosit o contraofertă: {{title}}",
+        "expired": "O înțelegere a expirat: {{title}}",
+        "reminder": "O înțelegere încă așteaptă răspuns: {{title}}",
+        "withdrawn": "O înțelegere a fost retrasă: {{title}}"
+      },
+      "handover": {
+        "checkin": "O predare a fost actualizată.",
+        "missed": "O predare a fost ratată."
+      },
+      "expense": {
+        "created": "A fost înregistrată o cheltuială nouă."
+      },
+      "post": {
+        "created": "A apărut o notiță nouă în familie."
+      },
+      "acknowledgment": {
+        "created": "Ceva ce ai împărtășit a fost confirmat."
+      }
+    }
+  },
+  "storage": {
+    "used": "Spațiu folosit",
+    "warning": "Familia a trecut de 70% din spațiul disponibil."
+  },
+  "pwa": {
+    "install": "Instalează aplicația",
+    "ios": "Pe iPhone, folosește Partajare, apoi Adaugă pe ecranul principal, ca să primești alerte.",
+    "update": "Există o actualizare",
+    "reload": "Reîncarcă",
+    "offline": "Ești offline. Paginile deschise rămân disponibile."
+  },
+  "errors": {
+    "unknown": "Nu a mers. Încearcă din nou.",
+    "not_authenticated": "Intră în cont mai întâi.",
+    "not_family_parent": "Doar un părinte poate face asta.",
+    "not_family_member": "Nu faci parte din această familie.",
+    "author_cannot_acknowledge": "Nu poți confirma primirea propriului element.",
+    "author_only": "Doar autorul poate schimba asta.",
+    "author_cannot_respond": "Nu poți răspunde la propria înțelegere.",
+    "author_edits_directly": "Poți edita direct propriul eveniment.",
+    "event_author_must_approve": "Persoana care a creat evenimentul aprobă schimbarea.",
+    "counter_of_counter": "O contraofertă poate fi doar acceptată sau refuzată.",
+    "max_parents": "Această familie are deja doi părinți.",
+    "invite_expired": "Invitația a expirat.",
+    "invite_used": "Invitația a fost folosită.",
+    "invite_not_found": "Linkul de invitație nu este valid.",
+    "reason_required": "Adaugă un motiv scurt.",
+    "unknown_subject": "Elementul nu poate fi schimbat așa.",
+    "proposal_not_pending": "Înțelegerea este deja închisă.",
+    "proposal_expired": "Înțelegerea a expirat.",
+    "attachments_frozen": "Adaugă fișiere într-o versiune nouă, după ce celălalt părinte a confirmat.",
+    "too_many_images": "Poți atașa cel mult 10 imagini.",
+    "audio_too_long": "O notă vocală poate avea cel mult 2 minute.",
+    "local_auth_disabled": "Autentificarea locală este doar pentru mediul Docker."
+  }
+}

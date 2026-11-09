@@ -1,0 +1,36 @@
+{
+  "name": "icoparent",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.20.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @icoparent/web dev",
+    "build": "pnpm --filter @icoparent/web build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:reset": "pnpm exec supabase db reset",
+    "db:test": "pnpm exec supabase test db",
+    "db:types": "pnpm exec supabase gen types typescript --local > apps/web/src/lib/database.types.ts",
+    "docker:up": "node scripts/docker-up.mjs",
+    "docker:down": "docker compose down && pnpm exec supabase stop",
+    "e2e": "pnpm --filter @icoparent/web exec playwright test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "supabase": "^3.0.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1"
+  }
+}

@@ -1,0 +1,5 @@
+PUSH_MODE=log
+PUSH_SHARED_SECRET=local-push-secret
+SUPABASE_URL=http://127.0.0.1:54321
+# Local demo key only. Never put a hosted service-role key in the repository.
+SUPABASE_SERVICE_ROLE_KEY=

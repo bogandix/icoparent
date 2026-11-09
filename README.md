@@ -13,7 +13,7 @@ Available in English and Romanian.
 - 🤝 Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - 🔒 Reporting a vulnerability: [`SECURITY.md`](SECURITY.md)
 
-Status: **V0 — Foundation** (planning complete).
+Status: **V1 — MVP** (family, calendar, agreements, expenses, feed, inbox, and the Worker). Cloudflare Pages builds the web app from `main`. Database tests need Docker.
 
 ## License
 

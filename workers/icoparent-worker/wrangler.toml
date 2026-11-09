@@ -1,0 +1,9 @@
+name = "icoparent-worker"
+main = "src/index.ts"
+compatibility_date = "2026-11-09"
+
+[triggers]
+crons = ["0 * * * *"]
+
+# Secrets live in the host environment, never in this file.
+# Local Docker sets PUSH_MODE=log so pushes are recorded instead of sent.

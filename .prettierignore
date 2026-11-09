@@ -1,0 +1,11 @@
+dist
+node_modules
+pnpm-lock.yaml
+coverage
+.wrangler
+supabase/.temp
+*.tsbuildinfo
+
+# Existing prose and GitHub templates are not code-formatted.
+*.md
+.github
