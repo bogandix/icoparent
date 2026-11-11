@@ -65,7 +65,12 @@
     "childrenCanPost": "Children can post to the family feed",
     "members": "People",
     "color": "Colour",
-    "noLogin": "No login"
+    "noLogin": "No login",
+    "removeChild": "Remove",
+    "removeChildNamed": "Remove {{name}}",
+    "confirmRemoveChild": "Remove {{name}}",
+    "childRemoved": "Child removed. Their past records are kept.",
+    "cancel": "Cancel"
   },
   "calendar": {
     "agenda": "Agenda",
@@ -234,6 +239,8 @@
     "attachments_frozen": "Add files on a new version after the other parent has acknowledged it.",
     "too_many_images": "You can attach up to 10 images.",
     "audio_too_long": "A voice note can be at most 2 minutes.",
-    "local_auth_disabled": "Local sign-in is only for the Docker environment."
+    "local_auth_disabled": "Local sign-in is only for the Docker environment.",
+    "child_duplicate": "A child with this name is already in the family.",
+    "child_not_found": "This child is no longer in the family."
   }
 }

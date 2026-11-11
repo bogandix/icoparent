@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
@@ -11,7 +12,9 @@ import { rpc } from "@/lib/rpc"
 export function OnboardingPage() {
   const { t } = useTranslation()
   const [name, setName] = useState("")
-  const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Bucharest")
+  const [timezone, setTimezone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Bucharest",
+  )
   const [message, setMessage] = useState<string | null>(null)
 
   return (
@@ -26,10 +29,20 @@ export function OnboardingPage() {
     >
       <PageTitle>{t("onboarding.title")}</PageTitle>
       <Field label={t("onboarding.name")}>
-        <input className={controlClass} value={name} onChange={(event) => setName(event.target.value)} required />
+        <input
+          className={controlClass}
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          required
+        />
       </Field>
       <Field label={t("onboarding.timezone")}>
-        <input className={controlClass} value={timezone} onChange={(event) => setTimezone(event.target.value)} required />
+        <input
+          className={controlClass}
+          value={timezone}
+          onChange={(event) => setTimezone(event.target.value)}
+          required
+        />
       </Field>
       <Field label={t("onboarding.currency")}>
         <input className={controlClass} value="RON" readOnly />
@@ -43,10 +56,58 @@ export function OnboardingPage() {
 export function MorePage() {
   const { t } = useTranslation()
   const { family, members, me } = useFamily()
+  const queryClient = useQueryClient()
   const [childName, setChildName] = useState("")
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
   const [invite, setInvite] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const usage = useState<number | null>(null)
+  const isParent = me?.role === "parent"
+
+  const refreshMembers = () => queryClient.invalidateQueries({ queryKey: ["members", family?.id] })
+  const showError = (error: unknown) => setMessage(t(`errors.${errorCode(error)}`))
+
+  const addChild = () => {
+    if (!family) return
+    const name = childName.trim()
+    const duplicate = members.some(
+      (member) =>
+        member.role === "child" && member.display_name.trim().toLowerCase() === name.toLowerCase(),
+    )
+    if (duplicate) {
+      setMessage(t("errors.child_duplicate"))
+      return
+    }
+    setBusy(true)
+    setMessage(null)
+    void rpc("add_child", {
+      p_family_id: family.id,
+      p_display_name: name,
+      p_birthdate: null,
+      p_color: "sky",
+    })
+      .then(async () => {
+        setChildName("")
+        await refreshMembers()
+      })
+      .catch(showError)
+      .finally(() => setBusy(false))
+  }
+
+  const removeChild = (memberId: string) => {
+    if (!family) return
+    setBusy(true)
+    setMessage(null)
+    void rpc("remove_child", { p_family_id: family.id, p_member_id: memberId })
+      .then(async () => {
+        setConfirmRemoveId(null)
+        await refreshMembers()
+        setMessage(t("family.childRemoved"))
+      })
+      .catch(showError)
+      .finally(() => setBusy(false))
+  }
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6">
@@ -54,11 +115,48 @@ export function MorePage() {
       <section className="flex flex-col gap-2">
         <h2 className="font-medium">{t("family.members")}</h2>
         {members.map((member) => (
-          <p key={member.id}>
-            <i className={`mr-2 inline-block h-3 w-3 rounded-full parent-${member.color}`} aria-hidden />
-            {member.display_name}
-            {member.user_id == null ? ` · ${t("family.noLogin")}` : ""}
-          </p>
+          <div key={member.id} className="flex min-h-11 items-center justify-between gap-3">
+            <p>
+              <i
+                className={`mr-2 inline-block h-3 w-3 rounded-full parent-${member.color}`}
+                aria-hidden
+              />
+              {member.display_name}
+              {member.user_id == null ? ` · ${t("family.noLogin")}` : ""}
+            </p>
+            {isParent && member.role === "child" ? (
+              confirmRemoveId === member.id ? (
+                <span className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    disabled={busy}
+                    onClick={() => setConfirmRemoveId(null)}
+                  >
+                    {t("family.cancel")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={busy}
+                    onClick={() => removeChild(member.id)}
+                  >
+                    {t("family.confirmRemoveChild", { name: member.display_name })}
+                  </Button>
+                </span>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busy}
+                  aria-label={t("family.removeChildNamed", { name: member.display_name })}
+                  onClick={() => setConfirmRemoveId(member.id)}
+                >
+                  {t("family.removeChild")}
+                </Button>
+              )
+            ) : null}
+          </div>
         ))}
       </section>
       {me?.role === "parent" && family ? (
@@ -72,12 +170,18 @@ export function MorePage() {
                 p_name: family.name,
                 p_timezone: family.timezone,
                 p_currency: family.default_currency,
-                p_children_can_post: (event.currentTarget.elements.namedItem("childrenCanPost") as HTMLInputElement).checked,
+                p_children_can_post: (
+                  event.currentTarget.elements.namedItem("childrenCanPost") as HTMLInputElement
+                ).checked,
               }).catch((error: unknown) => setMessage(t(`errors.${errorCode(error)}`)))
             }}
           >
             <label className="flex min-h-11 items-center gap-3 text-base">
-              <input name="childrenCanPost" type="checkbox" defaultChecked={family.children_can_post} />
+              <input
+                name="childrenCanPost"
+                type="checkbox"
+                defaultChecked={family.children_can_post}
+              />
               {t("family.childrenCanPost")}
             </label>
             <Button type="submit">{t("shell.save")}</Button>
@@ -86,28 +190,30 @@ export function MorePage() {
             className="flex flex-col gap-3"
             onSubmit={(event) => {
               event.preventDefault()
-              void rpc("add_child", {
-                p_family_id: family.id,
-                p_display_name: childName,
-                p_birthdate: null,
-                p_color: "sky",
-              })
-                .then(() => setChildName(""))
-                .catch((error: unknown) => setMessage(t(`errors.${errorCode(error)}`)))
+              addChild()
             }}
           >
             <Field label={t("family.childName")}>
-              <input className={controlClass} value={childName} onChange={(event) => setChildName(event.target.value)} required />
+              <input
+                className={controlClass}
+                value={childName}
+                onChange={(event) => setChildName(event.target.value)}
+                required
+              />
             </Field>
-            <Button type="submit">{t("family.addChild")}</Button>
+            <Button type="submit" disabled={busy || childName.trim() === ""}>
+              {t("family.addChild")}
+            </Button>
           </form>
           <Button
             type="button"
             variant="outline"
             onClick={() =>
-              void rpc<string>("create_invite", { p_family_id: family.id, p_email: null, p_role: "parent" }).then((token) =>
-                setInvite(`${window.location.origin}/invite/${token}`),
-              )
+              void rpc<string>("create_invite", {
+                p_family_id: family.id,
+                p_email: null,
+                p_role: "parent",
+              }).then((token) => setInvite(`${window.location.origin}/invite/${token}`))
             }
           >
             {t("family.inviteParent")}
@@ -116,9 +222,11 @@ export function MorePage() {
             type="button"
             variant="outline"
             onClick={() =>
-              void rpc<string>("create_invite", { p_family_id: family.id, p_email: null, p_role: "child" }).then((token) =>
-                setInvite(`${window.location.origin}/invite/${token}`),
-              )
+              void rpc<string>("create_invite", {
+                p_family_id: family.id,
+                p_email: null,
+                p_role: "child",
+              }).then((token) => setInvite(`${window.location.origin}/invite/${token}`))
             }
           >
             {t("family.inviteChild")}
@@ -126,7 +234,11 @@ export function MorePage() {
           {invite ? (
             <Button
               type="button"
-              onClick={() => void navigator.clipboard.writeText(invite).then(() => setMessage(t("family.copied")))}
+              onClick={() =>
+                void navigator.clipboard
+                  .writeText(invite)
+                  .then(() => setMessage(t("family.copied")))
+              }
             >
               {t("family.copy")}
             </Button>
@@ -134,12 +246,18 @@ export function MorePage() {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => void rpc("storage_usage", { p_family_id: family.id }).then((bytes) => usage[1](Number(bytes)))}
+            onClick={() =>
+              void rpc("storage_usage", { p_family_id: family.id }).then((bytes) =>
+                usage[1](Number(bytes)),
+              )
+            }
           >
             {t("storage.used")}
           </Button>
           {usage[0] != null ? <p>{Math.round(usage[0] / (1024 * 1024))} MB</p> : null}
-          {usage[0] != null && usage[0] > 0.7 * 1024 * 1024 * 1024 ? <p>{t("storage.warning")}</p> : null}
+          {usage[0] != null && usage[0] > 0.7 * 1024 * 1024 * 1024 ? (
+            <p>{t("storage.warning")}</p>
+          ) : null}
         </>
       ) : null}
       <Button type="button" variant="outline" onClick={() => void signOut()}>

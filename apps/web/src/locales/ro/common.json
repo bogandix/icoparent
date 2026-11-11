@@ -65,7 +65,12 @@
     "childrenCanPost": "Copiii pot posta în jurnalul familiei",
     "members": "Oameni",
     "color": "Culoare",
-    "noLogin": "Fără cont"
+    "noLogin": "Fără cont",
+    "removeChild": "Elimină",
+    "removeChildNamed": "Elimină pe {{name}}",
+    "confirmRemoveChild": "Elimină pe {{name}}",
+    "childRemoved": "Copilul a fost eliminat. Istoricul lui se păstrează.",
+    "cancel": "Anulează"
   },
   "calendar": {
     "agenda": "Agendă",
@@ -234,6 +239,8 @@
     "attachments_frozen": "Adaugă fișiere într-o versiune nouă, după ce celălalt părinte a confirmat.",
     "too_many_images": "Poți atașa cel mult 10 imagini.",
     "audio_too_long": "O notă vocală poate avea cel mult 2 minute.",
-    "local_auth_disabled": "Autentificarea locală este doar pentru mediul Docker."
+    "local_auth_disabled": "Autentificarea locală este doar pentru mediul Docker.",
+    "child_duplicate": "Există deja un copil cu acest nume în familie.",
+    "child_not_found": "Acest copil nu mai face parte din familie."
   }
 }
