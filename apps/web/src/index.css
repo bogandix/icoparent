@@ -114,6 +114,36 @@
     height: 1.25rem;
     accent-color: var(--primary);
   }
+
+  /*
+   * iOS Safari gives date/time inputs a native intrinsic width that ignores width: 100%,
+   * so they overflow narrow containers. Drop the native appearance and let them shrink;
+   * tapping still opens the native picker.
+   */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input[type="month"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
+    line-height: 1.5;
+    background-color: var(--background);
+    color: inherit;
+  }
+
+  input::-webkit-date-and-time-value {
+    min-height: 1.5em;
+    margin: 0;
+    text-align: left;
+  }
+
+  input::-webkit-datetime-edit {
+    padding: 0;
+  }
 }
 
 .parent-teal {

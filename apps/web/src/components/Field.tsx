@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 
 export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="flex flex-col gap-1 text-sm">
+    <label className="flex min-w-0 flex-col gap-1 text-sm">
       <span className="font-medium">{label}</span>
       {children}
     </label>
@@ -10,7 +10,7 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 }
 
 export const controlClass =
-  "min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
+  "min-h-11 w-full min-w-0 max-w-full rounded-md border border-input bg-background px-3 py-2 text-base"
 
 export const linkRowClass = "flex min-h-11 items-center rounded-md text-base active:bg-accent"
 
