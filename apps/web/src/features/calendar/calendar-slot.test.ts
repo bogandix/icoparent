@@ -18,8 +18,9 @@ describe("slotFromElement", () => {
   })
 
   it("starts at the time-grid slot and lasts one hour", () => {
-    const slot = element('<div data-date="2026-11-09"><div data-time="16:00:00"><span></span></div></div>')
-      .querySelector("span")
+    const slot = element(
+      '<div data-date="2026-11-09"><div data-time="16:00:00"><span></span></div></div>',
+    ).querySelector("span")
     expect(slotFromElement(slot)?.starts).toBe("2026-11-09T16:00")
     expect(slotFromElement(slot)?.ends).toBe("2026-11-09T17:00")
   })

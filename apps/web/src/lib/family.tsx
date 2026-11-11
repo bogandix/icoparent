@@ -65,7 +65,11 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     queryKey: ["family", activeId],
     enabled: Boolean(activeId),
     queryFn: async () => {
-      const { data, error } = await supabase.from("families").select("*").eq("id", activeId ?? "").single()
+      const { data, error } = await supabase
+        .from("families")
+        .select("*")
+        .eq("id", activeId ?? "")
+        .single()
       if (error) throw error
       return data as Family
     },
@@ -97,7 +101,14 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
         setFamilyIdState(id)
       },
     }
-  }, [familyQuery.data, familyQuery.isLoading, membersQuery.data, membersQuery.isLoading, memberships.isLoading, session?.user.id])
+  }, [
+    familyQuery.data,
+    familyQuery.isLoading,
+    membersQuery.data,
+    membersQuery.isLoading,
+    memberships.isLoading,
+    session?.user.id,
+  ])
 
   return <FamilyContext.Provider value={value}>{children}</FamilyContext.Provider>
 }

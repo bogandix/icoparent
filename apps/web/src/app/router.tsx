@@ -6,7 +6,11 @@ import { LoginPage } from "@/features/auth/LoginPage"
 import { InvitePage, MorePage, OnboardingPage } from "@/features/family/FamilyPages"
 import { TodayPage } from "@/features/home/TodayPage"
 import { CalendarPage, CustodyPage } from "@/features/calendar/CalendarPages"
-import { AgreementDetailPage, AgreementsPage, NewAgreementPage } from "@/features/proposals/AgreementsPage"
+import {
+  AgreementDetailPage,
+  AgreementsPage,
+  NewAgreementPage,
+} from "@/features/proposals/AgreementsPage"
 import { ExpenseDetailPage, ExpenseFormPage, MoneyPage } from "@/features/expenses/MoneyPage"
 import { FeedPage } from "@/features/feed/FeedPage"
 import { InboxPage } from "@/features/notifications/InboxPage"

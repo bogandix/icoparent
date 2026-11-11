@@ -3,7 +3,13 @@ import "@fullcalendar/react/skeleton.css"
 import "@fullcalendar/react/themes/classic/theme.css"
 import "@fullcalendar/react/themes/classic/palette.css"
 import FullCalendar from "@fullcalendar/react"
-import type { DateSelectInfo, DatesSetInfo, DayCellInfo, EventClickInfo, EventInput } from "@fullcalendar/react"
+import type {
+  DateSelectInfo,
+  DatesSetInfo,
+  DayCellInfo,
+  EventClickInfo,
+  EventInput,
+} from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/react/daygrid"
 import interactionPlugin from "@fullcalendar/react/interaction"
 import listPlugin from "@fullcalendar/react/list"
@@ -14,10 +20,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { controlClass, Field, PageTitle } from "@/components/Field"
+import { Notice } from "@/components/Notice"
 import { Button } from "@/components/ui/button"
 import { errorCode } from "@/lib/errors"
 import { useFamily } from "@/lib/family"
@@ -114,7 +121,8 @@ function toDateTimeLocal(date: Date, timeZone: string): string {
     minute: "2-digit",
     hourCycle: "h23",
   }).formatToParts(date)
-  const pick = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "00"
+  const pick = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "00"
   return `${pick("year")}-${pick("month")}-${pick("day")}T${pick("hour")}:${pick("minute")}`
 }
 
@@ -137,6 +145,14 @@ export function CalendarPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const timeZone = family?.timezone || "UTC"
+
+  // "Add event" from Home links to #new-event: bring the form into view.
+  useEffect(() => {
+    if (window.location.hash !== "#new-event") return
+    requestAnimationFrame(() =>
+      formAnchor.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    )
+  }, [])
 
   const data = useQuery({
     queryKey: ["calendar", family?.id, range.from.toISOString(), range.to.toISOString()],
@@ -169,7 +185,12 @@ export function CalendarPage() {
   const events = (data.data?.events ?? [])
     .filter((event) => (childId ? allowed.has(event.id) : true))
     .flatMap((event) =>
-      expandRecurrence(new Date(event.starts_at), new Date(event.ends_at), event.rrule, range.to).map((start) => ({
+      expandRecurrence(
+        new Date(event.starts_at),
+        new Date(event.ends_at),
+        event.rrule,
+        range.to,
+      ).map((start) => ({
         ...event,
         starts_at: start.toISOString(),
       })),
@@ -227,7 +248,8 @@ export function CalendarPage() {
     let pointerId = -1
 
     const open = (target: EventTarget | null, x: number, y: number, pointer: "mouse" | "touch") => {
-      const element = target instanceof Element ? target : target instanceof Node ? target.parentElement : null
+      const element =
+        target instanceof Element ? target : target instanceof Node ? target.parentElement : null
       if (element?.closest(".icoparent-calendar-toolbar, input, select, textarea")) return
       const slot = slotFromElement(element)
       if (!slot) return
@@ -280,7 +302,11 @@ export function CalendarPage() {
 
   function onDates(info: DatesSetInfo) {
     setRange((current) => {
-      if (current.from.getTime() === info.start.getTime() && current.to.getTime() === info.end.getTime()) return current
+      if (
+        current.from.getTime() === info.start.getTime() &&
+        current.to.getTime() === info.end.getTime()
+      )
+        return current
       return { from: info.start, to: info.end }
     })
   }
@@ -311,15 +337,31 @@ export function CalendarPage() {
     if (!menu) return
     setDraft({ starts: menu.starts, ends: menu.ends, kind })
     setMenu(null)
-    requestAnimationFrame(() => formAnchor.current?.scrollIntoView({ behavior: "smooth", block: "start" }))
+    requestAnimationFrame(() =>
+      formAnchor.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    )
   }
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
-      <PageTitle>{t("shell.calendar")}</PageTitle>
+      <div className="flex items-center justify-between gap-3">
+        <PageTitle>{t("shell.calendar")}</PageTitle>
+        {me?.role === "parent" ? (
+          <Link
+            to="/calendar/custody"
+            className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm active:bg-accent"
+          >
+            {t("calendar.custody")}
+          </Link>
+        ) : null}
+      </div>
       <label className="text-sm">
         {t("calendar.filterChild")}
-        <select className={controlClass} value={childId} onChange={(event) => setChildId(event.target.value)}>
+        <select
+          className={controlClass}
+          value={childId}
+          onChange={(event) => setChildId(event.target.value)}
+        >
           <option value="">{t("calendar.everyone")}</option>
           {members
             .filter((member) => member.role === "child")
@@ -331,68 +373,72 @@ export function CalendarPage() {
         </select>
       </label>
       <div ref={calendarRoot} className="icoparent-calendar">
-      <FullCalendar
-        plugins={calendarPlugins}
-        initialView="listWeek"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "listWeek,timeGridDay,timeGridWeek,dayGridMonth",
-        }}
-        headerToolbarClass="icoparent-calendar-toolbar"
-        todayText={t("calendar.today")}
-        monthText={t("calendar.month")}
-        weekTextLong={t("calendar.week")}
-        dayText={t("calendar.day")}
-        listText={t("calendar.agenda")}
-        locales={calendarLocales}
-        locale={i18n.language.startsWith("ro") ? "ro" : "en"}
-        timeZone={timeZone}
-        height="auto"
-        expandRows={false}
-        dayMaxEventRows={3}
-        dayRowClass="icoparent-day-row"
-        views={{
-          timeGridDay: { contentHeight: 640 },
-          timeGridWeek: { contentHeight: 640 },
-        }}
-        nowIndicator
-        navLinks
-        selectable
-        selectMirror
-        longPressDelay={3000}
-        selectLongPressDelay={3000}
-        eventDidMount={(info) => {
-          if (!info.event.start) return
-          info.el.dataset.quickStart = toDateTimeLocal(info.event.start, timeZone)
-          if (info.event.end) info.el.dataset.quickEnd = toDateTimeLocal(info.event.end, timeZone)
-          info.el.dataset.quickTitle = info.event.title
-        }}
-        events={calendarEvents}
-        datesSet={onDates}
-        eventClick={onEventClick}
-        select={onSelect}
-        noEventsContent={t("calendar.empty")}
-        dayCellTopContent={(info: DayCellInfo) => {
-          const key = markerDay(info.date, timeZone)
-          const parentId = key ? custodyByDay.get(key) : undefined
-          const parent = parentId ? names.get(parentId) : undefined
-          return (
-            <span className="flex w-full items-center justify-between gap-0.5 leading-none">
-              <span className="font-medium">{info.dayNumberText}</span>
-              {parent ? (
-                <i
-                  className={`inline-block h-2 w-2 shrink-0 rounded-full parent-${parent.color}`}
-                  title={parent.display_name}
-                />
-              ) : null}
-            </span>
-          )
-        }}
-      />
+        <FullCalendar
+          plugins={calendarPlugins}
+          initialView="listWeek"
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "listWeek,timeGridDay,timeGridWeek,dayGridMonth",
+          }}
+          headerToolbarClass="icoparent-calendar-toolbar"
+          todayText={t("calendar.today")}
+          monthText={t("calendar.month")}
+          weekTextLong={t("calendar.week")}
+          dayText={t("calendar.day")}
+          listText={t("calendar.agenda")}
+          locales={calendarLocales}
+          locale={i18n.language.startsWith("ro") ? "ro" : "en"}
+          timeZone={timeZone}
+          height="auto"
+          expandRows={false}
+          dayMaxEventRows={3}
+          dayRowClass="icoparent-day-row"
+          views={{
+            timeGridDay: { contentHeight: 640 },
+            timeGridWeek: { contentHeight: 640 },
+          }}
+          nowIndicator
+          navLinks
+          selectable
+          selectMirror
+          longPressDelay={3000}
+          selectLongPressDelay={3000}
+          eventDidMount={(info) => {
+            if (!info.event.start) return
+            info.el.dataset.quickStart = toDateTimeLocal(info.event.start, timeZone)
+            if (info.event.end) info.el.dataset.quickEnd = toDateTimeLocal(info.event.end, timeZone)
+            info.el.dataset.quickTitle = info.event.title
+          }}
+          events={calendarEvents}
+          datesSet={onDates}
+          eventClick={onEventClick}
+          select={onSelect}
+          noEventsContent={t("calendar.empty")}
+          dayCellTopContent={(info: DayCellInfo) => {
+            const key = markerDay(info.date, timeZone)
+            const parentId = key ? custodyByDay.get(key) : undefined
+            const parent = parentId ? names.get(parentId) : undefined
+            return (
+              <span className="flex w-full items-center justify-between gap-0.5 leading-none">
+                <span className="font-medium">{info.dayNumberText}</span>
+                {parent ? (
+                  <i
+                    className={`inline-block h-2 w-2 shrink-0 rounded-full parent-${parent.color}`}
+                    title={parent.display_name}
+                  />
+                ) : null}
+              </span>
+            )
+          }}
+        />
       </div>
-      {me?.role === "parent" ? <p className="text-sm text-muted-foreground">{t("calendar.quickHint")}</p> : null}
-      {me?.role === "parent" ? <p className="text-sm text-muted-foreground">{t("calendar.tapEvent")}</p> : null}
+      {me?.role === "parent" ? (
+        <p className="text-sm text-muted-foreground">{t("calendar.quickHint")}</p>
+      ) : null}
+      {me?.role === "parent" ? (
+        <p className="text-sm text-muted-foreground">{t("calendar.tapEvent")}</p>
+      ) : null}
       {menu && me?.role === "parent" ? (
         <QuickMenu
           menu={menu}
@@ -426,9 +472,14 @@ export function CalendarPage() {
         </article>
       ) : null}
       {me?.role === "parent" ? (
-        <div ref={formAnchor}>
+        <section
+          ref={formAnchor}
+          id="new-event"
+          className="scroll-mt-20 rounded-lg border border-border p-4"
+        >
+          <h2 className="mb-3 font-medium">{t("calendar.addEvent")}</h2>
           <EventForm slot={draft} />
-        </div>
+        </section>
       ) : null}
     </div>
   )
@@ -478,7 +529,11 @@ export function Acknowledge({
             type="button"
             variant="ghost"
             onClick={() =>
-              void rpc("void_item", { p_subject_type: subjectType, p_subject_id: subjectId, p_reason: reason })
+              void rpc("void_item", {
+                p_subject_type: subjectType,
+                p_subject_id: subjectId,
+                p_reason: reason,
+              })
                 .then(onDone)
                 .catch((error: unknown) => setMessage(t(`errors.${errorCode(error)}`)))
             }
@@ -561,6 +616,7 @@ function EventForm({ slot }: { slot: EventDraft | null }) {
   })
   const unavailable = form.watch("kind") === "parent_blocker"
   const [message, setMessage] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (!slot) return
@@ -574,6 +630,12 @@ function EventForm({ slot }: { slot: EventDraft | null }) {
       className="flex flex-col gap-3"
       onSubmit={(event) =>
         void form.handleSubmit(async (values) => {
+          setSaved(false)
+          setMessage(null)
+          if (new Date(values.ends) <= new Date(values.starts)) {
+            setMessage(t("agreements.endsBeforeStarts"))
+            return
+          }
           try {
             await rpc("create_event", {
               p_family_id: family?.id,
@@ -589,6 +651,7 @@ function EventForm({ slot }: { slot: EventDraft | null }) {
               p_child_ids: [],
             })
             form.reset()
+            setSaved(true)
             await queryClient.invalidateQueries({ queryKey: ["calendar"] })
           } catch (error) {
             setMessage(t(`errors.${errorCode(error)}`))
@@ -612,13 +675,20 @@ function EventForm({ slot }: { slot: EventDraft | null }) {
         <input
           type="checkbox"
           checked={unavailable}
-          onChange={(event) => form.setValue("kind", event.target.checked ? "parent_blocker" : "child_event")}
+          onChange={(event) =>
+            form.setValue("kind", event.target.checked ? "parent_blocker" : "child_event")
+          }
         />
         {t("calendar.addBlocker")}
       </label>
-      {unavailable ? <p className="text-sm text-muted-foreground">{t("calendar.blockerHelp")}</p> : null}
-      <Button type="submit">{unavailable ? t("calendar.addBlocker") : t("calendar.addEvent")}</Button>
-      {message ? <p role="alert">{message}</p> : null}
+      {unavailable ? (
+        <p className="text-sm text-muted-foreground">{t("calendar.blockerHelp")}</p>
+      ) : null}
+      <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+        {unavailable ? t("calendar.addBlocker") : t("calendar.addEvent")}
+      </Button>
+      {saved ? <Notice>{t("calendar.saved")}</Notice> : null}
+      {message ? <Notice tone="error">{message}</Notice> : null}
     </form>
   )
 }
@@ -636,18 +706,37 @@ export function CustodyPage() {
     <div className="mx-auto flex max-w-lg flex-col gap-4">
       <PageTitle>{t("calendar.custody")}</PageTitle>
       {(["week_on_week_off", "2_2_3", "2_2_5_5", "alternate_weekends"] as const).map((item) => (
-        <Button key={item} type="button" variant={preset === item ? "default" : "outline"} onClick={() => setPreset(item)}>
+        <Button
+          key={item}
+          type="button"
+          variant={preset === item ? "default" : "outline"}
+          onClick={() => setPreset(item)}
+        >
           {t(`custody.${item}`)}
         </Button>
       ))}
       <Field label={t("custody.starts")}>
-        <input className={controlClass} type="date" value={starts} onChange={(event) => setStarts(event.target.value)} />
+        <input
+          className={controlClass}
+          type="date"
+          value={starts}
+          onChange={(event) => setStarts(event.target.value)}
+        />
       </Field>
       <Field label={t("custody.handoverTime")}>
-        <input className={controlClass} type="time" value={time} onChange={(event) => setTime(event.target.value)} />
+        <input
+          className={controlClass}
+          type="time"
+          value={time}
+          onChange={(event) => setTime(event.target.value)}
+        />
       </Field>
       <Field label={t("custody.handoverPlace")}>
-        <input className={controlClass} value={place} onChange={(event) => setPlace(event.target.value)} />
+        <input
+          className={controlClass}
+          value={place}
+          onChange={(event) => setPlace(event.target.value)}
+        />
       </Field>
       <Button
         type="button"
@@ -661,7 +750,9 @@ export function CustodyPage() {
             p_handover_time: time,
             p_handover_location: place,
           })
-            .then((result) => setMessage(result.status === "proposed" ? t("custody.proposed") : null))
+            .then((result) =>
+              setMessage(result.status === "proposed" ? t("custody.proposed") : null),
+            )
             .catch((error: unknown) => setMessage(t(`errors.${errorCode(error)}`)))
         }
       >

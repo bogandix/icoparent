@@ -2,7 +2,10 @@
   "home": {
     "kicker": "Coparentalitate",
     "title": "iCoParent",
-    "subtitle": "Un spațiu calm și privat pentru doi părinți și copiii lor."
+    "subtitle": "Un spațiu calm și privat pentru doi părinți și copiii lor.",
+    "quick": "Acțiuni rapide",
+    "upcoming": "Urmează",
+    "build": "Versiunea {{date}} · {{commit}}"
   },
   "notFound": {
     "title": "Pagina nu a fost găsită",
@@ -25,7 +28,8 @@
     "outsider": "Persoană din afară",
     "signOut": "Ieși din cont",
     "missingConfig": "Acest build nu are încă o adresă Supabase. Adaug-o în mediu înainte de autentificare.",
-    "language": "Limbă"
+    "language": "Limbă",
+    "failed": "Autentificarea nu a mers. Încearcă din nou."
   },
   "shell": {
     "today": "Azi",
@@ -41,7 +45,14 @@
     "empty": "Nimic aici încă.",
     "save": "Salvează",
     "cancel": "Renunță",
-    "parentsOnly": "Doar părinții"
+    "parentsOnly": "Doar părinții",
+    "inboxUnread_one": "Mesaje, {{count}} necitit",
+    "inboxUnread_few": "Mesaje, {{count}} necitite",
+    "inboxUnread_other": "Mesaje, {{count}} de necitite",
+    "navigation": "Navigare principală",
+    "preferences": "Preferințe",
+    "language": "Limbă",
+    "theme": "Temă"
   },
   "onboarding": {
     "title": "Creează familia",
@@ -70,7 +81,10 @@
     "removeChildNamed": "Elimină pe {{name}}",
     "confirmRemoveChild": "Elimină pe {{name}}",
     "childRemoved": "Copilul a fost eliminat. Istoricul lui se păstrează.",
-    "cancel": "Anulează"
+    "cancel": "Anulează",
+    "invites": "Invitații",
+    "inviteHelp": "Trimite acest link. Funcționează o singură dată și expiră în 7 zile.",
+    "settingsSaved": "Setările familiei au fost salvate."
   },
   "calendar": {
     "agenda": "Agendă",
@@ -99,7 +113,8 @@
     "allDay": "Toată ziua",
     "filterChild": "Copil",
     "everyone": "Toți",
-    "handover": "Predare"
+    "handover": "Predare",
+    "saved": "Salvat în calendar."
   },
   "custody": {
     "week_on_week_off": "O săptămână și o săptămână",
@@ -130,7 +145,32 @@
     "logExpense": "Înregistrează cheltuiala",
     "event": "Eveniment",
     "otherParent": "Celălalt părinte",
-    "coverHelp": "Celălalt părinte este rugat să preia copiii în acest interval. Nu se schimbă nimic până acceptă."
+    "coverHelp": "Celălalt părinte este rugat să preia copiii în acest interval. Nu se schimbă nimic până acceptă.",
+    "status": {
+      "pending": "În așteptare",
+      "accepted": "Acceptată",
+      "declined": "Refuzată",
+      "countered": "Contraofertă",
+      "expired": "Expirată",
+      "withdrawn": "Retrasă"
+    },
+    "expires": "Are nevoie de răspuns până pe {{date}}.",
+    "counterNeedsNote": "Scrie mai întâi contraoferta în notă.",
+    "responded": "Răspuns trimis.",
+    "waitingHelp": "Se așteaptă răspunsul celuilalt părinte.",
+    "withdrawn": "Înțelegere retrasă.",
+    "saved": "Trimisă. Celălalt părinte are 7 zile să răspundă.",
+    "endsBeforeStarts": "Sfârșitul trebuie să fie după început.",
+    "help": {
+      "decision": "Cere acordul celuilalt părinte pentru ceva, de exemplu o cumpărătură sau o excursie.",
+      "blocker_request": "Roagă-l pe celălalt părinte să stea cu copiii într-un interval în care tu nu poți. Nimic nu se schimbă până nu acceptă.",
+      "custody_swap": "Propune ca celălalt părinte să aibă copiii în aceste zile. Nimic nu se schimbă până nu acceptă.",
+      "event_change": "Propune o schimbare la un eveniment creat de celălalt părinte. El sau ea o aprobă."
+    },
+    "pickEvent": "Alege un eveniment",
+    "newTitle": "Titlu nou",
+    "amount": "Sumă (opțional)",
+    "send": "Trimite"
   },
   "money": {
     "add": "Adaugă cheltuială",
@@ -151,7 +191,12 @@
     "trips": "Excursii",
     "food": "Mâncare",
     "other": "Altele",
-    "original": "Suma originală"
+    "original": "Suma originală",
+    "saved": "Cheltuială salvată.",
+    "invalidAmount": "Introdu o sumă mai mare decât 0, de exemplu 12,50.",
+    "children": "Pentru",
+    "receiptSaved": "Bon adăugat.",
+    "voided": "Această cheltuială a fost anulată."
   },
   "feed": {
     "new": "Amintire nouă",
@@ -164,7 +209,11 @@
     "onThisDay": "În această zi",
     "heart": "Inimă",
     "smile": "Zâmbet",
-    "hug": "Îmbrățișare"
+    "hug": "Îmbrățișare",
+    "posted": "Publicat.",
+    "photo": "Fotografie (opțional)",
+    "recording": "Se înregistrează… eliberează ca să trimiți",
+    "micBlocked": "Microfonul este blocat. Permite-l din setările browserului."
   },
   "handover": {
     "dropoff": "Am lăsat copilul",
@@ -173,7 +222,8 @@
     "next": "Următoarea predare",
     "missed": "Ratată",
     "late": "{{minutes}} min întârziere",
-    "onTime": "La timp"
+    "onTime": "La timp",
+    "saved": "Confirmare salvată la {{time}}."
   },
   "inbox": {
     "title": "Inbox",
@@ -204,7 +254,8 @@
       "acknowledgment": {
         "created": "Ceva ce ai împărtășit a fost confirmat."
       }
-    }
+    },
+    "unread": "Necitit"
   },
   "storage": {
     "used": "Spațiu folosit",
@@ -241,6 +292,21 @@
     "audio_too_long": "O notă vocală poate avea cel mult 2 minute.",
     "local_auth_disabled": "Autentificarea locală este doar pentru mediul Docker.",
     "child_duplicate": "Există deja un copil cu acest nume în familie.",
-    "child_not_found": "Acest copil nu mai face parte din familie."
+    "child_not_found": "Acest copil nu mai face parte din familie.",
+    "counter_required": "Scrie mai întâi contraoferta.",
+    "handover_closed": "Această predare este deja închisă.",
+    "invalid_category": "Alege o categorie.",
+    "invalid_checkin": "Acest check-in nu este posibil.",
+    "invalid_currency": "Această monedă nu este acceptată.",
+    "invalid_event_kind": "Acest tip de eveniment nu este acceptat.",
+    "invalid_locale": "Această limbă nu este acceptată.",
+    "invalid_pattern": "Acest program de custodie nu este valid.",
+    "invalid_proposal_kind": "Acest tip de înțelegere nu este acceptat.",
+    "invalid_response": "Acest răspuns nu este posibil.",
+    "invalid_role": "Acest rol nu este acceptat.",
+    "invalid_timezone": "Acest fus orar nu este valid.",
+    "invalid_visibility": "Această vizibilitate nu este acceptată.",
+    "not_found": "Acest element nu mai există.",
+    "unknown_preset": "Alege un program de custodie."
   }
 }

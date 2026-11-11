@@ -12,11 +12,14 @@ describe("appPlatform", () => {
   })
 
   it("reads the native platform from the Capacitor bridge", () => {
-    ;(window as Window & { Capacitor?: { isNativePlatform: () => boolean; getPlatform: () => string } }).Capacitor =
-      {
-        isNativePlatform: () => true,
-        getPlatform: () => "ios",
+    ;(
+      window as Window & {
+        Capacitor?: { isNativePlatform: () => boolean; getPlatform: () => string }
       }
+    ).Capacitor = {
+      isNativePlatform: () => true,
+      getPlatform: () => "ios",
+    }
     expect(appPlatform()).toBe("ios")
     expect(isNativePlatform()).toBe(true)
   })

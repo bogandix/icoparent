@@ -3,11 +3,13 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router"
 import { controlClass, Field, PageTitle } from "@/components/Field"
+import { Notice } from "@/components/Notice"
 import { Button } from "@/components/ui/button"
 import { signOut } from "@/lib/auth"
 import { errorCode } from "@/lib/errors"
 import { useFamily } from "@/lib/family"
 import { rpc } from "@/lib/rpc"
+import { setTheme, storedTheme, type Theme } from "@/lib/theme"
 
 export function OnboardingPage() {
   const { t } = useTranslation()
@@ -61,12 +63,15 @@ export function MorePage() {
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [invite, setInvite] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+  const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null)
   const usage = useState<number | null>(null)
   const isParent = me?.role === "parent"
 
+  // Success text, or null to clear. Errors go through showError.
+  const setMessage = (text: string | null) => setNotice(text ? { tone: "success", text } : null)
   const refreshMembers = () => queryClient.invalidateQueries({ queryKey: ["members", family?.id] })
-  const showError = (error: unknown) => setMessage(t(`errors.${errorCode(error)}`))
+  const showError = (error: unknown) =>
+    setNotice({ tone: "error", text: t(`errors.${errorCode(error)}`) })
 
   const addChild = () => {
     if (!family) return
@@ -76,7 +81,7 @@ export function MorePage() {
         member.role === "child" && member.display_name.trim().toLowerCase() === name.toLowerCase(),
     )
     if (duplicate) {
-      setMessage(t("errors.child_duplicate"))
+      setNotice({ tone: "error", text: t("errors.child_duplicate") })
       return
     }
     setBusy(true)
@@ -109,10 +114,32 @@ export function MorePage() {
       .finally(() => setBusy(false))
   }
 
+  const sectionClass = "flex flex-col gap-3 rounded-lg border border-border p-4"
+
+  const shareInvite = async (role: "parent" | "child") => {
+    if (!family) return
+    setMessage(null)
+    try {
+      const token = await rpc<string>("create_invite", {
+        p_family_id: family.id,
+        p_email: null,
+        p_role: role,
+      })
+      const link = `${window.location.origin}/invite/${token}`
+      setInvite(link)
+      if (typeof navigator.share === "function") {
+        await navigator.share({ title: "iCoParent", url: link }).catch(() => undefined)
+      }
+    } catch (error) {
+      showError(error)
+    }
+  }
+
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6">
+    <div className="mx-auto flex max-w-lg flex-col gap-5">
       <PageTitle>{t("shell.more")}</PageTitle>
-      <section className="flex flex-col gap-2">
+      {notice ? <Notice tone={notice.tone}>{notice.text}</Notice> : null}
+      <section className={sectionClass}>
         <h2 className="font-medium">{t("family.members")}</h2>
         {members.map((member) => (
           <div key={member.id} className="flex min-h-11 items-center justify-between gap-3">
@@ -158,9 +185,66 @@ export function MorePage() {
             ) : null}
           </div>
         ))}
+        {isParent && family ? (
+          <form
+            className="flex flex-col gap-2 border-t border-border pt-3"
+            onSubmit={(event) => {
+              event.preventDefault()
+              addChild()
+            }}
+          >
+            <Field label={t("family.addChild")}>
+              <input
+                className={controlClass}
+                value={childName}
+                placeholder={t("family.childName")}
+                onChange={(event) => setChildName(event.target.value)}
+                required
+              />
+            </Field>
+            <Button type="submit" disabled={busy || childName.trim() === ""}>
+              {t("family.addChild")}
+            </Button>
+          </form>
+        ) : null}
       </section>
-      {me?.role === "parent" && family ? (
-        <>
+      {isParent && family ? (
+        <section className={sectionClass}>
+          <h2 className="font-medium">{t("family.invites")}</h2>
+          <div className="grid grid-cols-1 gap-2">
+            <Button type="button" variant="outline" onClick={() => void shareInvite("parent")}>
+              {t("family.inviteParent")}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => void shareInvite("child")}>
+              {t("family.inviteChild")}
+            </Button>
+          </div>
+          {invite ? (
+            <div className="flex flex-col gap-2">
+              <input
+                className={`${controlClass} text-sm`}
+                readOnly
+                value={invite}
+                onFocus={(event) => event.target.select()}
+              />
+              <Button
+                type="button"
+                onClick={() =>
+                  void navigator.clipboard
+                    .writeText(invite)
+                    .then(() => setMessage(t("family.copied")))
+                }
+              >
+                {t("family.copy")}
+              </Button>
+              <p className="text-sm text-muted-foreground">{t("family.inviteHelp")}</p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+      {isParent && family ? (
+        <section className={sectionClass}>
+          <h2 className="font-medium">{t("family.settings")}</h2>
           <form
             className="flex flex-col gap-3"
             onSubmit={(event) => {
@@ -173,76 +257,27 @@ export function MorePage() {
                 p_children_can_post: (
                   event.currentTarget.elements.namedItem("childrenCanPost") as HTMLInputElement
                 ).checked,
-              }).catch((error: unknown) => setMessage(t(`errors.${errorCode(error)}`)))
+              })
+                .then(async () => {
+                  await queryClient.invalidateQueries({ queryKey: ["family", family.id] })
+                  setMessage(t("family.settingsSaved"))
+                })
+                .catch(showError)
             }}
           >
             <label className="flex min-h-11 items-center gap-3 text-base">
               <input
                 name="childrenCanPost"
                 type="checkbox"
+                className="h-5 w-5"
                 defaultChecked={family.children_can_post}
               />
               {t("family.childrenCanPost")}
             </label>
-            <Button type="submit">{t("shell.save")}</Button>
-          </form>
-          <form
-            className="flex flex-col gap-3"
-            onSubmit={(event) => {
-              event.preventDefault()
-              addChild()
-            }}
-          >
-            <Field label={t("family.childName")}>
-              <input
-                className={controlClass}
-                value={childName}
-                onChange={(event) => setChildName(event.target.value)}
-                required
-              />
-            </Field>
-            <Button type="submit" disabled={busy || childName.trim() === ""}>
-              {t("family.addChild")}
+            <Button type="submit" variant="outline">
+              {t("shell.save")}
             </Button>
           </form>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              void rpc<string>("create_invite", {
-                p_family_id: family.id,
-                p_email: null,
-                p_role: "parent",
-              }).then((token) => setInvite(`${window.location.origin}/invite/${token}`))
-            }
-          >
-            {t("family.inviteParent")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              void rpc<string>("create_invite", {
-                p_family_id: family.id,
-                p_email: null,
-                p_role: "child",
-              }).then((token) => setInvite(`${window.location.origin}/invite/${token}`))
-            }
-          >
-            {t("family.inviteChild")}
-          </Button>
-          {invite ? (
-            <Button
-              type="button"
-              onClick={() =>
-                void navigator.clipboard
-                  .writeText(invite)
-                  .then(() => setMessage(t("family.copied")))
-              }
-            >
-              {t("family.copy")}
-            </Button>
-          ) : null}
           <Button
             type="button"
             variant="ghost"
@@ -254,17 +289,74 @@ export function MorePage() {
           >
             {t("storage.used")}
           </Button>
-          {usage[0] != null ? <p>{Math.round(usage[0] / (1024 * 1024))} MB</p> : null}
+          {usage[0] != null ? <p>{Math.round(usage[0] / (1024 * 1024))} MB / 1024 MB</p> : null}
           {usage[0] != null && usage[0] > 0.7 * 1024 * 1024 * 1024 ? (
             <p>{t("storage.warning")}</p>
           ) : null}
-        </>
+        </section>
       ) : null}
+      <Preferences />
       <Button type="button" variant="outline" onClick={() => void signOut()}>
         {t("auth.signOut")}
       </Button>
-      {message ? <p>{message}</p> : null}
     </div>
+  )
+}
+
+function Preferences() {
+  const { t, i18n } = useTranslation()
+  const { me } = useFamily()
+  const [theme, setThemeState] = useState<Theme>(storedTheme)
+  const language = i18n.language.startsWith("ro") ? "ro" : "en"
+  const segment = (active: boolean) =>
+    `min-h-11 flex-1 rounded-md border px-3 text-base ${active ? "border-primary bg-primary text-primary-foreground" : "border-border"}`
+
+  return (
+    <section className="flex flex-col gap-3 rounded-lg border border-border p-4">
+      <h2 className="font-medium">{t("shell.preferences")}</h2>
+      <div className="flex flex-col gap-1 text-sm">
+        <span className="font-medium">{t("shell.language")}</span>
+        <div className="flex gap-2" role="group" aria-label={t("shell.language")}>
+          {(["en", "ro"] as const).map((code) => (
+            <button
+              key={code}
+              type="button"
+              aria-pressed={language === code}
+              className={segment(language === code)}
+              onClick={() => {
+                void i18n.changeLanguage(code)
+                if (me)
+                  void rpc("update_my_profile", {
+                    p_display_name: me.display_name,
+                    p_locale: code,
+                  }).catch(() => undefined)
+              }}
+            >
+              {code === "en" ? "English" : "Română"}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-1 text-sm">
+        <span className="font-medium">{t("shell.theme")}</span>
+        <div className="flex gap-2" role="group" aria-label={t("shell.theme")}>
+          {(["light", "dark"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={theme === value}
+              className={segment(theme === value)}
+              onClick={() => {
+                setTheme(value)
+                setThemeState(value)
+              }}
+            >
+              {value === "light" ? t("shell.themeLight") : t("shell.themeDark")}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 

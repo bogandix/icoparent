@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate } from "react-router"
+import { Notice } from "@/components/Notice"
 import { Button } from "@/components/ui/button"
 import { HomePage } from "@/app/HomePage"
 import { localAuthEnabled, signInWithGoogle, signInWithLocalActor, useSession } from "@/lib/auth"
@@ -32,8 +33,20 @@ export function LoginPage() {
           </Button>
         ))}
       </div>
-      {!supabaseConfigured ? <p className="text-muted-foreground">{t("auth.missingConfig")}</p> : null}
-      <Button type="button" onClick={() => void signInWithGoogle().catch((reason: unknown) => setError(String(reason)))}>
+      {!supabaseConfigured ? (
+        <p className="text-muted-foreground">{t("auth.missingConfig")}</p>
+      ) : null}
+      <Button
+        type="button"
+        size="lg"
+        onClick={() => {
+          setError(null)
+          void signInWithGoogle().catch((reason: unknown) => {
+            console.error(reason)
+            setError(t("auth.failed"))
+          })
+        }}
+      >
         {t("auth.google")}
       </Button>
       {localAuthEnabled ? (
@@ -44,14 +57,19 @@ export function LoginPage() {
               key={actor}
               type="button"
               variant="outline"
-              onClick={() => void signInWithLocalActor(actor).catch((reason: unknown) => setError(String(reason)))}
+              onClick={() =>
+                void signInWithLocalActor(actor).catch((reason: unknown) => {
+                  console.error(reason)
+                  setError(t("auth.failed"))
+                })
+              }
             >
               {t(`auth.${actor}`)}
             </Button>
           ))}
         </section>
       ) : null}
-      {error ? <p role="alert">{error}</p> : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
     </main>
   )
 }

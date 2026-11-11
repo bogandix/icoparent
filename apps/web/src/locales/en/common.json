@@ -2,7 +2,10 @@
   "home": {
     "kicker": "Co-parenting",
     "title": "iCoParent",
-    "subtitle": "A calm, private space for two parents and their children."
+    "subtitle": "A calm, private space for two parents and their children.",
+    "quick": "Quick actions",
+    "upcoming": "Coming up",
+    "build": "Version {{date}} · {{commit}}"
   },
   "notFound": {
     "title": "Page not found",
@@ -25,7 +28,8 @@
     "outsider": "Outsider",
     "signOut": "Sign out",
     "missingConfig": "This build has no Supabase address yet. Add it to the environment before signing in.",
-    "language": "Language"
+    "language": "Language",
+    "failed": "Sign-in did not work. Try again."
   },
   "shell": {
     "today": "Today",
@@ -41,7 +45,14 @@
     "empty": "Nothing here yet.",
     "save": "Save",
     "cancel": "Cancel",
-    "parentsOnly": "Parents only"
+    "parentsOnly": "Parents only",
+    "inboxUnread_one": "Inbox, {{count}} unread",
+    "inboxUnread_few": "Inbox, {{count}} unread",
+    "inboxUnread_other": "Inbox, {{count}} unread",
+    "navigation": "Main navigation",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme"
   },
   "onboarding": {
     "title": "Create your family",
@@ -70,7 +81,10 @@
     "removeChildNamed": "Remove {{name}}",
     "confirmRemoveChild": "Remove {{name}}",
     "childRemoved": "Child removed. Their past records are kept.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "invites": "Invitations",
+    "inviteHelp": "Send this link. It works once and expires in 7 days.",
+    "settingsSaved": "Family settings saved."
   },
   "calendar": {
     "agenda": "Agenda",
@@ -99,7 +113,8 @@
     "allDay": "All day",
     "filterChild": "Child",
     "everyone": "Everyone",
-    "handover": "Handover"
+    "handover": "Handover",
+    "saved": "Saved to the calendar."
   },
   "custody": {
     "week_on_week_off": "Week on, week off",
@@ -130,7 +145,32 @@
     "logExpense": "Log the expense",
     "event": "Event",
     "otherParent": "Other parent",
-    "coverHelp": "The other parent is asked to take the children for this time. Nothing changes until they accept."
+    "coverHelp": "The other parent is asked to take the children for this time. Nothing changes until they accept.",
+    "status": {
+      "pending": "Waiting",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "countered": "Countered",
+      "expired": "Expired",
+      "withdrawn": "Withdrawn"
+    },
+    "expires": "Needs an answer by {{date}}.",
+    "counterNeedsNote": "Write your counter-offer in the note first.",
+    "responded": "Answer sent.",
+    "waitingHelp": "Waiting for the other parent to answer.",
+    "withdrawn": "Agreement withdrawn.",
+    "saved": "Sent. The other parent has 7 days to answer.",
+    "endsBeforeStarts": "The end must be after the start.",
+    "help": {
+      "decision": "Ask the other parent to agree on something, like a purchase or a trip.",
+      "blocker_request": "Ask the other parent to take the children for a time you cannot. Nothing changes until they accept.",
+      "custody_swap": "Propose that the other parent has the children for these days. Nothing changes until they accept.",
+      "event_change": "Propose a change to an event the other parent created. They approve it."
+    },
+    "pickEvent": "Choose an event",
+    "newTitle": "New title",
+    "amount": "Amount (optional)",
+    "send": "Send"
   },
   "money": {
     "add": "Add expense",
@@ -151,7 +191,12 @@
     "trips": "Trips",
     "food": "Food",
     "other": "Other",
-    "original": "Original amount"
+    "original": "Original amount",
+    "saved": "Expense saved.",
+    "invalidAmount": "Enter an amount greater than 0, for example 12,50.",
+    "children": "For",
+    "receiptSaved": "Receipt added.",
+    "voided": "This expense was voided."
   },
   "feed": {
     "new": "New memory",
@@ -164,7 +209,11 @@
     "onThisDay": "On this day",
     "heart": "Heart",
     "smile": "Smile",
-    "hug": "Hug"
+    "hug": "Hug",
+    "posted": "Posted.",
+    "photo": "Photo (optional)",
+    "recording": "Recording… release to send",
+    "micBlocked": "The microphone is blocked. Allow it in your browser settings."
   },
   "handover": {
     "dropoff": "Dropped off",
@@ -173,7 +222,8 @@
     "next": "Next handover",
     "missed": "Missed",
     "late": "{{minutes}} min late",
-    "onTime": "On time"
+    "onTime": "On time",
+    "saved": "Check-in saved at {{time}}."
   },
   "inbox": {
     "title": "Inbox",
@@ -204,7 +254,8 @@
       "acknowledgment": {
         "created": "Something you shared was acknowledged."
       }
-    }
+    },
+    "unread": "Unread"
   },
   "storage": {
     "used": "Storage used",
@@ -241,6 +292,21 @@
     "audio_too_long": "A voice note can be at most 2 minutes.",
     "local_auth_disabled": "Local sign-in is only for the Docker environment.",
     "child_duplicate": "A child with this name is already in the family.",
-    "child_not_found": "This child is no longer in the family."
+    "child_not_found": "This child is no longer in the family.",
+    "counter_required": "Write your counter-offer first.",
+    "handover_closed": "This handover is already closed.",
+    "invalid_category": "Choose a category.",
+    "invalid_checkin": "That check-in is not possible.",
+    "invalid_currency": "That currency is not supported.",
+    "invalid_event_kind": "That kind of event is not supported.",
+    "invalid_locale": "That language is not supported.",
+    "invalid_pattern": "That custody pattern is not valid.",
+    "invalid_proposal_kind": "That kind of agreement is not supported.",
+    "invalid_response": "That answer is not possible.",
+    "invalid_role": "That role is not supported.",
+    "invalid_timezone": "That timezone is not valid.",
+    "invalid_visibility": "That visibility is not supported.",
+    "not_found": "This item no longer exists.",
+    "unknown_preset": "Choose a custody pattern."
   }
 }

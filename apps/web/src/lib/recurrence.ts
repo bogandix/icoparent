@@ -17,7 +17,12 @@ export function buildRRule(freq: Recurrence["freq"], until: string): string {
   return `FREQ=${freq};UNTIL=${until.replaceAll("-", "")}`
 }
 
-export function expandRecurrence(startsAt: Date, endsAt: Date, rule: string | null, rangeEnd: Date): Date[] {
+export function expandRecurrence(
+  startsAt: Date,
+  endsAt: Date,
+  rule: string | null,
+  rangeEnd: Date,
+): Date[] {
   const parsed = parseRRule(rule)
   if (!parsed) return [startsAt]
   const until = new Date(

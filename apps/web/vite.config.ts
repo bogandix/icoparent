@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import tailwindcss from "@tailwindcss/vite"
@@ -9,10 +10,30 @@ import { assertProductionAuthMode } from "./src/lib/production-auth.ts"
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Cloudflare Pages exposes the commit; locally fall back to git, then "dev".
+function buildCommit(): string {
+  const fromPages = process.env.CF_PAGES_COMMIT_SHA
+  if (fromPages) return fromPages.slice(0, 7)
+  try {
+    return execSync("git rev-parse --short HEAD", {
+      cwd: dirname,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim()
+  } catch {
+    return "dev"
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, dirname, "")
   assertProductionAuthMode(mode, env.VITE_AUTH_MODE)
   return {
+    define: {
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+      __BUILD_COMMIT__: JSON.stringify(buildCommit()),
+    },
     // F-301 sets CAPACITOR=1 so the native WebView can load relative assets.
     base: env.CAPACITOR === "1" ? "./" : "/",
     plugins: [

@@ -712,6 +712,9 @@ isOneToOne: false
 "raise_app":
 { Args: { "code": string }; Returns: undefined
                            },
+"remove_child":
+{ Args: { "p_family_id": string,"p_member_id": string }; Returns: undefined
+                           },
 "respond_to_proposal":
 { Args: { "p_comment": string,"p_counter": Json,"p_id": string,"p_response": string }; Returns: string
                            },
